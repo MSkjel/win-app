@@ -321,6 +321,11 @@ namespace ProtonVPN.Sidebar
             SetKillSwitchActivated(e.NetworkBlocked, e.State.Status);
             OnPropertyChanged(nameof(IsToShowChangeServerButton));
 
+            if (_vpnStatus == VpnStatus.Disconnected && _appSettings.ConnectOnAppStart)
+            {
+                _vpnManager.QuickConnectAsync();
+            }
+
             return Task.CompletedTask;
         }
 
@@ -427,6 +432,11 @@ namespace ProtonVPN.Sidebar
 
         public async Task OnConnectionDetailsChanged(ConnectionDetails connectionDetails)
         {
+            if (_vpnStatus == VpnStatus.Disconnected && _appSettings.ConnectOnAppStart)
+            {
+                await _vpnManager.QuickConnectAsync();
+            }
+
             if (!connectionDetails.ServerIpAddress.IsNullOrEmpty())
             {
                 SetIp(connectionDetails.ServerIpAddress);
